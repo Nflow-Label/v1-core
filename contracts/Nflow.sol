@@ -17,22 +17,6 @@ contract Nflow {
         implementation = address(new NFTToken());
     }
 
-    function removeItem(address _erc721, uint256 _item) private {
-        for (uint256 i = 0; i < erc721TokenIds[_erc721].length; i++) {
-            if (erc721TokenIds[_erc721][i] == _item) {
-                removeAtIndex(_erc721, _item);
-                return;
-            }
-        }
-    }
-
-    function removeAtIndex(address _erc721, uint256 _index) private {
-        erc721TokenIds[_erc721][_index] = erc721TokenIds[_erc721][
-            erc721TokenIds[_erc721].length - 1
-        ];
-        erc721TokenIds[_erc721].pop();
-    }
-
     function tokenAddress(address _erc721) public view returns (address) {
         bytes32 salt = keccak256(abi.encodePacked(_erc721));
         return
@@ -93,7 +77,13 @@ contract Nflow {
                 msg.sender,
                 erc721TokenIds[_erc721][i]
             );
-            removeItem(_erc721, erc721TokenIds[_erc721][i]);
+            erc721TokenIds[_erc721][i] = erc721TokenIds[_erc721][
+                erc721TokenIds[_erc721].length - 1 - i
+            ];
+        }
+
+        for (uint256 i = 0; i < erc721Amount; i++) {
+            erc721TokenIds[_erc721].pop();
         }
     }
 }
